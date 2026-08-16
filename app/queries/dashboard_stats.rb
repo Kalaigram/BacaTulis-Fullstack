@@ -30,6 +30,6 @@ class DashboardStats
   end
 
   def recent_comments
-    Comment.recent.limit(5) if user.admin?
+    CommentQuery.new.recent(limit: 5) if user.admin?
   end
 end

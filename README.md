@@ -121,8 +121,8 @@ Setiap tabel dijamin berisi minimal **5 baris**:
 ## Testing & Linter
 
 ```bash
-ruby bin/rails test    # 61 test / 290 assertions
-ruby bin/rails rubocop # 57 files, 0 offenses
+ruby bin/rails test    # 93 test / 360 assertions
+ruby bin/rails rubocop # 90 files, 0 offenses
 ```
 
 ## Struktur Proyek
@@ -133,12 +133,18 @@ app/
                         # categories, comments, users, dashboard
   controllers/concerns/ # authentication.rb (login/logout, require_admin)
   models/               # user, session, post, category, comment
+  queries/              # PostQuery, DashboardStats, CommentQuery
+  services/             # PostCreator, PostUpdater, CommentCreator, dll.
+  policies/             # PostPolicy, CommentPolicy, UserPolicy, CategoryPolicy
+  mailers/              # WelcomeMailer, CommentMailer (+ previews)
+  jobs/                 # SendWelcomeEmailJob, SendCommentNotificationJob, dll.
   views/                # daisyUI + layout drawer sidebar
   assets/stylesheets/   # input Tailwind + tema "rails"/"rails-dark"
 config/routes.rb        # definisi seluruh route
 db/
   migrate/              # 8 migrasi (users..comments)
   seeds.rb              # data dummy profesional & idempotent
+lib/tasks/              # demo:reset, maintenance:cleanup_drafts, maintenance:purge_sessions
 test/                   # integration tests + fixtures
 ```
 
