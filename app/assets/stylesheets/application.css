@@ -1,0 +1,67 @@
+@import "tailwindcss";
+
+@plugin "daisyui";
+
+/* Tema "rails" — warna brand Ruby on Rails (merah #D30001) */
+@plugin "daisyui/theme" {
+  name: "rails";
+  default: true;
+  color-scheme: light;
+  --color-base-100: oklch(100% 0 0);
+  --color-base-200: oklch(96.19% 0.005 78.3);
+  --color-base-300: oklch(92.28% 0.007 80.7);
+  --color-base-content: oklch(23.93% 0 0);
+  --color-primary: oklch(54.44% 0.223 29.1);
+  --color-primary-content: oklch(100% 0 0);
+  --color-secondary: oklch(46.09% 0.179 31.1);
+  --color-secondary-content: oklch(100% 0 0);
+  --color-accent: oklch(67.08% 0.195 44);
+  --color-accent-content: oklch(100% 0 0);
+  --color-neutral: oklch(26.86% 0 0);
+  --color-neutral-content: oklch(94.61% 0 0);
+  --color-info: oklch(54.61% 0.215 262.9);
+  --color-info-content: oklch(100% 0 0);
+  --color-success: oklch(62.71% 0.17 149.2);
+  --color-success-content: oklch(100% 0 0);
+  --color-warning: oklch(76.86% 0.165 70.1);
+  --color-warning-content: oklch(23.93% 0 0);
+  --color-error: oklch(50.54% 0.19 27.5);
+  --color-error-content: oklch(100% 0 0);
+}
+
+@plugin "daisyui/theme" {
+  name: "rails-dark";
+  prefersdark: true;
+  color-scheme: dark;
+  --color-base-100: oklch(20.46% 0 0);
+  --color-base-200: oklch(23.93% 0 0);
+  --color-base-300: oklch(28.09% 0 0);
+  --color-base-content: oklch(94.61% 0 0);
+  --color-primary: oklch(60.74% 0.21 26.8);
+  --color-primary-content: oklch(100% 0 0);
+  --color-secondary: oklch(54.44% 0.223 29.1);
+  --color-secondary-content: oklch(100% 0 0);
+  --color-accent: oklch(67.08% 0.195 44);
+  --color-accent-content: oklch(100% 0 0);
+  --color-neutral: oklch(32.11% 0 0);
+  --color-neutral-content: oklch(94.61% 0 0);
+  --color-info: oklch(54.61% 0.215 262.9);
+  --color-info-content: oklch(100% 0 0);
+  --color-success: oklch(62.71% 0.17 149.2);
+  --color-success-content: oklch(100% 0 0);
+  --color-warning: oklch(76.86% 0.165 70.1);
+  --color-warning-content: oklch(23.93% 0 0);
+  --color-error: oklch(50.54% 0.19 27.5);
+  --color-error-content: oklch(100% 0 0);
+}
+
+@source "../views";
+@source "../helpers";
+
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+.post-body p {
+  margin-block: 0.75rem;
+}

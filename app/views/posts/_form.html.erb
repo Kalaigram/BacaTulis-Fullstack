@@ -1,0 +1,46 @@
+<%= form_with(model: post) do |form| %>
+  <% if post.errors.any? %>
+    <div role="alert" class="alert alert-error mb-4">
+      <div>
+        <h2 class="font-bold">Form tidak valid, ada <%= post.errors.count %> kesalahan:</h2>
+        <ul class="list-disc list-inside text-sm mt-1">
+          <% post.errors.each do |error| %>
+            <li><%= error.full_message %></li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="card bg-base-100 shadow-sm">
+    <div class="card-body">
+      <fieldset class="fieldset">
+        <label class="fieldset-label">Judul
+          <%= form.text_field :title, class: "input w-full" %>
+        </label>
+
+        <label class="fieldset-label">Isi
+          <%= form.textarea :body, rows: 8, class: "textarea w-full" %>
+        </label>
+
+        <label class="fieldset-label">Kategori
+          <%= form.select :category_id,
+                          options_from_collection_for_select(Category.order(:name), :id, :name, post.category_id),
+                          { include_blank: "Tanpa kategori" },
+                          class: "select select-bordered w-full" %>
+        </label>
+
+        <label class="fieldset-label">Status
+          <%= form.select :status,
+                          options_for_select([ [ "Publikasi", "published" ], [ "Draft", "draft" ] ], post.status),
+                          {},
+                          class: "select select-bordered w-full" %>
+        </label>
+      </fieldset>
+
+      <div class="card-actions justify-end">
+        <%= form.submit post.persisted? ? "Simpan Perubahan" : "Buat Post", class: "btn btn-primary" %>
+      </div>
+    </div>
+  </div>
+<% end %>

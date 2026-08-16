@@ -1,0 +1,19 @@
+user_post:
+  title: Post milik user
+  body: Isi dari post yang dibuat oleh user.
+  user: user
+  category: rails
+  status: published
+
+admin_post:
+  title: Post milik admin
+  body: Isi dari post yang dibuat oleh admin.
+  user: admin
+  category: ruby
+  status: published
+
+user_draft:
+  title: Draft rahasia user
+  body: Isi draft yang belum dipublikasi.
+  user: user
+  status: draft

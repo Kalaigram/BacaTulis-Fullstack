@@ -1,0 +1,95 @@
+<div class="flex items-center justify-center px-4 py-10">
+  <div class="grid w-full max-w-4xl overflow-hidden rounded-2xl bg-base-100 shadow-2xl lg:grid-cols-2">
+
+    <div class="relative hidden flex-col justify-between gap-10 bg-primary p-10 text-primary-content lg:flex">
+      <div class="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-base-100/10"></div>
+      <div class="pointer-events-none absolute -bottom-20 -left-10 h-56 w-56 rounded-full bg-base-100/10"></div>
+
+      <div class="relative flex items-center gap-3">
+        <span class="grid h-11 w-11 place-items-center rounded-xl bg-base-100 text-2xl font-black text-primary shadow">R</span>
+        <span class="text-2xl font-bold">BacaTulis</span>
+      </div>
+
+      <div class="relative">
+        <h1 class="text-3xl font-bold leading-snug">
+          Kelola, publikasikan, dan diskusikan tulisanmu.
+        </h1>
+        <ul class="mt-6 space-y-3 text-sm">
+          <li class="flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-5 w-5 shrink-0">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+            </svg>
+            Post, kategori &amp; komentar dalam satu tempat
+          </li>
+          <li class="flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-5 w-5 shrink-0">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+            </svg>
+            Peran admin &amp; user dengan kontrol penuh
+          </li>
+          <li class="flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-5 w-5 shrink-0">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+            </svg>
+            Tema terang &amp; gelap mengikuti sistem
+          </li>
+        </ul>
+      </div>
+
+      <p class="relative text-xs opacity-80">
+        Ruby on Rails 8 &middot; Tailwind CSS &middot; daisyUI &middot; MySQL
+      </p>
+    </div>
+
+    <div class="p-8 sm:p-10">
+      <div class="mb-6 flex items-center gap-3 lg:hidden">
+        <span class="grid h-10 w-10 place-items-center rounded-xl bg-primary text-xl font-black text-primary-content shadow">R</span>
+        <span class="text-xl font-bold">BacaTulis</span>
+      </div>
+
+      <h1 class="text-2xl font-bold">Masuk</h1>
+      <p class="mt-1 text-sm opacity-70">Selamat datang kembali. Silakan masuk untuk melanjutkan.</p>
+
+      <%= form_with(url: session_path, class: "mt-6") do |form| %>
+        <fieldset class="fieldset">
+          <label class="fieldset-label">Email</label>
+          <label class="input w-full">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-5 w-5 opacity-60">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+            </svg>
+            <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username", class: "grow", placeholder: "nama@contoh.com" %>
+          </label>
+
+          <label class="fieldset-label mt-4">Password</label>
+          <label class="input w-full" data-controller="password-toggle">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-5 w-5 opacity-60">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+            </svg>
+            <%= form.password_field :password, required: true, autocomplete: "current-password", class: "grow", placeholder: "password", data: { password_toggle_target: "input" } %>
+            <button type="button" data-action="password-toggle#toggle" class="btn btn-circle btn-ghost btn-xs" aria-label="Tampilkan password">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-5 w-5" data-password-toggle-target="iconShow">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+              </svg>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="hidden h-5 w-5" data-password-toggle-target="iconHide">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
+              </svg>
+            </button>
+          </label>
+
+          <%= form.submit "Masuk", class: "btn btn-primary w-full mt-6" %>
+        </fieldset>
+      <% end %>
+
+      <div class="divider text-xs opacity-60">AKUN DEMO</div>
+      <div class="grid grid-cols-2 gap-2">
+        <%= button_to "Masuk sebagai Admin", session_path, params: { email_address: "admin@example.com", password: "password" }, class: "btn btn-outline btn-sm" %>
+        <%= button_to "Masuk sebagai User", session_path, params: { email_address: "user@example.com", password: "password" }, class: "btn btn-outline btn-sm" %>
+      </div>
+
+      <p class="mt-6 text-center text-sm">
+        Belum punya akun? <%= link_to "Daftar gratis", new_registration_path, class: "link link-primary font-semibold" %>
+      </p>
+    </div>
+  </div>
+</div>

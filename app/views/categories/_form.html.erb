@@ -1,0 +1,27 @@
+<%= form_with model: category, class: "card max-w-lg bg-base-100 shadow-sm" do |form| %>
+  <% if category.errors.any? %>
+    <div role="alert" class="alert alert-error m-4 mb-0">
+      <div>
+        <h2 class="font-bold">Form tidak valid, ada <%= category.errors.count %> kesalahan:</h2>
+        <ul class="list-disc list-inside text-sm mt-1">
+          <% category.errors.each do |error| %>
+            <li><%= error.full_message %></li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="card-body">
+    <fieldset class="fieldset">
+      <label class="fieldset-label">Nama kategori
+        <%= form.text_field :name, required: true, class: "input w-full", placeholder: "Contoh: Ruby, Rails, Database…" %>
+      </label>
+    </fieldset>
+
+    <div class="card-actions justify-end">
+      <%= link_to "Batal", categories_path, class: "btn btn-ghost" %>
+      <%= form.submit category.persisted? ? "Simpan Perubahan" : "Buat Kategori", class: "btn btn-primary" %>
+    </div>
+  </div>
+<% end %>

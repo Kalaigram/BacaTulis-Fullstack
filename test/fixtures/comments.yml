@@ -1,0 +1,14 @@
+user_comment:
+  body: Komentar dari user untuk post user.
+  user: user
+  post: user_post
+
+admin_comment:
+  body: Komentar dari admin untuk post user.
+  user: admin
+  post: user_post
+
+user_comment_on_admin_post:
+  body: Komentar dari user untuk post admin.
+  user: user
+  post: admin_post

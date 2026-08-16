@@ -1,0 +1,46 @@
+<div class="flex justify-center">
+  <div class="card w-full max-w-md bg-base-100 shadow-xl">
+    <div class="card-body">
+      <h1 class="card-title text-2xl">Daftar Akun</h1>
+
+      <%= form_with model: @user, url: registration_path do |form| %>
+        <% if @user.errors.any? %>
+          <div role="alert" class="alert alert-error mt-2">
+            <div>
+              <h2 class="font-bold">Form tidak valid, ada <%= @user.errors.count %> kesalahan:</h2>
+              <ul class="list-disc list-inside text-sm mt-1">
+                <% @user.errors.each do |error| %>
+                  <li><%= error.full_message %></li>
+                <% end %>
+              </ul>
+            </div>
+          </div>
+        <% end %>
+
+        <fieldset class="fieldset mt-2">
+          <label class="fieldset-label">Nama
+            <%= form.text_field :name, autofocus: true, autocomplete: "name", class: "input w-full" %>
+          </label>
+
+          <label class="fieldset-label">Email
+            <%= form.email_field :email_address, required: true, autocomplete: "username", class: "input w-full" %>
+          </label>
+
+          <label class="fieldset-label">Password
+            <%= form.password_field :password, required: true, autocomplete: "new-password", class: "input w-full" %>
+          </label>
+
+          <label class="fieldset-label">Konfirmasi password
+            <%= form.password_field :password_confirmation, required: true, autocomplete: "new-password", class: "input w-full" %>
+          </label>
+
+          <%= form.submit "Daftar", class: "btn btn-primary mt-4 w-full" %>
+        </fieldset>
+      <% end %>
+
+      <p class="text-sm text-center mt-4">
+        Sudah punya akun? <%= link_to "Masuk di sini", new_session_path, class: "link" %>
+      </p>
+    </div>
+  </div>
+</div>

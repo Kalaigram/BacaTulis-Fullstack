@@ -1,0 +1,18 @@
+<div class="card max-w-lg bg-base-100 shadow-sm">
+  <div class="card-body">
+    <h1 class="card-title text-2xl">Profil</h1>
+
+    <div class="space-y-1 mt-2">
+      <p><span class="opacity-70">Nama:</span> <%= current_user.name.presence || "—" %></p>
+      <p><span class="opacity-70">Email:</span> <%= current_user.email_address %></p>
+      <p>
+        <span class="opacity-70">Peran:</span>
+        <span class="badge <%= current_user.role == "admin" ? "badge-primary" : "badge-info" %>"><%= current_user.role %></span>
+      </p>
+    </div>
+
+    <div class="card-actions mt-4">
+      <%= link_to "Edit Profil", edit_profile_path, class: "btn btn-primary" %>
+    </div>
+  </div>
+</div>

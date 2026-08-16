@@ -1,0 +1,11 @@
+ruby:
+  name: Ruby
+  slug: ruby
+
+rails:
+  name: Rails
+  slug: rails
+
+database:
+  name: Database & SQL
+  slug: database-sql

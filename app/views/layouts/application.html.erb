@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title) || "BacaTulis" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="BacaTulis">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
+    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="min-h-screen bg-base-200">
+    <div class="h-1 bg-primary"></div>
+
+    <div class="navbar bg-base-100 border-b border-base-300 shadow-sm">
+      <div class="navbar-start">
+        <% if user_signed_in? %>
+          <label for="sidebar-drawer" class="btn btn-ghost btn-circle lg:hidden" aria-label="Buka menu">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-6 w-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+            </svg>
+          </label>
+        <% end %>
+        <%= link_to root_path, class: "flex items-center gap-2 px-2" do %>
+          <span class="grid h-8 w-8 place-items-center rounded-md bg-primary text-base font-black text-primary-content shadow">R</span>
+          <span class="text-xl font-bold text-base-content">BacaTulis</span>
+        <% end %>
+      </div>
+
+      <div class="navbar-end">
+        <% if user_signed_in? %>
+          <div class="dropdown dropdown-end">
+            <div tabindex="0" role="button" class="btn btn-ghost">
+              <%= current_user.name.presence || current_user.email_address %>
+              <span class="badge <%= current_user.role == "admin" ? "badge-primary" : "badge-info" %>"><%= current_user.role %></span>
+            </div>
+            <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-10 w-52 p-2 shadow">
+              <li><%= link_to "Profil", profile_path %></li>
+              <li><%= button_to "Keluar", session_path, method: :delete %></li>
+            </ul>
+          </div>
+        <% else %>
+          <%= link_to "Masuk", new_session_path, class: "btn btn-primary" %>
+        <% end %>
+      </div>
+    </div>
+
+    <% if user_signed_in? %>
+      <div class="drawer lg:drawer-open">
+        <input id="sidebar-drawer" type="checkbox" class="drawer-toggle" />
+
+        <div class="drawer-content flex min-h-screen flex-col">
+          <main class="w-full flex-1 px-4 py-8">
+            <%= render "shared/flash" %>
+            <%= yield %>
+          </main>
+        </div>
+
+        <div class="drawer-side z-30">
+          <label for="sidebar-drawer" aria-label="Tutup menu" class="drawer-overlay"></label>
+
+          <aside class="menu min-h-full w-72 bg-base-100 p-4 text-base-content">
+            <ul>
+              <li><%= nav_link_to "Dashboard", root_path %></li>
+              <li>
+                <%= link_to "Semua Post", posts_path, class: current_page?(posts_path) && params[:scope].blank? ? "menu-active" : "" %>
+              </li>
+              <li>
+                <%= link_to "Post Saya", posts_path(scope: "mine"), class: params[:scope] == "mine" ? "menu-active" : "" %>
+              </li>
+              <% if current_user.admin? %>
+                <li><%= nav_link_to "Kategori", categories_path %></li>
+                <li><%= nav_link_to "Pengguna", users_path %></li>
+              <% end %>
+            </ul>
+          </aside>
+        </div>
+      </div>
+    <% else %>
+      <main class="w-full flex-1 px-4 py-8">
+        <%= render "shared/flash" %>
+        <%= yield %>
+      </main>
+    <% end %>
+  </body>
+</html>

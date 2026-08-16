@@ -1,0 +1,62 @@
+<article class="card bg-base-100 shadow-sm">
+  <div class="card-body">
+    <h1 class="card-title text-2xl">
+      <%= @post.title %>
+      <%= render "status_badge", post: @post %>
+    </h1>
+    <p class="text-sm opacity-70">
+      oleh <%= @post.user.email_address %> &middot; <%= l @post.created_at, format: :long %>
+      <% if @post.category %>
+        &middot; <span class="badge badge-neutral badge-outline badge-sm"><%= @post.category.name %></span>
+      <% end %>
+    </p>
+    <div class="post-body mt-4"><%= simple_format @post.body %></div>
+  </div>
+</article>
+
+<div class="mt-6 flex items-center gap-2">
+  <%= link_to "Kembali", posts_path, class: "btn btn-ghost" %>
+  <%= link_to "Edit", edit_post_path(@post), class: "btn" %>
+  <%= button_to "Hapus", @post, method: :delete, class: "btn btn-error", data: { turbo_confirm: "Yakin ingin menghapus post ini?" } %>
+</div>
+
+<div class="card bg-base-100 shadow-sm mt-6">
+  <div class="card-body">
+    <h2 class="card-title text-lg">
+      Komentar <span class="badge badge-ghost badge-sm"><%= @post.comments.count %></span>
+    </h2>
+
+    <div class="space-y-4 mt-2">
+      <% @post.comments.includes(:user).recent.each do |comment| %>
+        <div class="border-base-300 border-t pt-3">
+          <div class="flex items-center justify-between gap-4">
+            <p class="text-sm font-semibold">
+              <%= comment.user.name.presence || comment.user.email_address %>
+              <span class="badge <%= comment.user.role == "admin" ? "badge-primary" : "badge-info" %> badge-xs"><%= comment.user.role %></span>
+            </p>
+            <span class="text-xs opacity-60"><%= time_ago_in_words(comment.created_at) %> lalu</span>
+          </div>
+          <p class="mt-1"><%= simple_format comment.body %></p>
+          <% if comment.user == current_user || current_user.admin? %>
+            <div class="mt-1">
+              <%= button_to "Hapus", comment, method: :delete, class: "btn btn-xs btn-ghost btn-error", data: { turbo_confirm: "Hapus komentar ini?" } %>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+
+      <% if @post.comments.empty? %>
+        <p class="text-sm opacity-70">Belum ada komentar. Jadilah yang pertama.</p>
+      <% end %>
+    </div>
+
+    <%= form_with model: @post.comments.build, url: post_comments_path(@post), class: "mt-4" do |form| %>
+      <fieldset class="fieldset">
+        <label class="fieldset-label">Tambah komentar
+          <%= form.textarea :body, rows: 3, class: "textarea w-full", placeholder: "Tulis komentar…" %>
+        </label>
+        <%= form.submit "Kirim Komentar", class: "btn btn-primary mt-2" %>
+      </fieldset>
+    <% end %>
+  </div>
+</div>

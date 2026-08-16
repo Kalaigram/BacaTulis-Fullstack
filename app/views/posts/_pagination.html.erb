@@ -1,0 +1,21 @@
+<% if local_assigns[:total] && local_assigns[:total] > local_assigns[:per_page] %>
+  <%
+    current = [ local_assigns[:page].to_i, 1 ].max
+    pages = (total.to_f / per_page).ceil
+  %>
+  <div class="flex items-center justify-between gap-4 mt-6">
+    <% if current > 1 %>
+      <%= link_to "← Sebelumnya", url_for(request.params.merge(page: current - 1)), class: "btn btn-sm" %>
+    <% else %>
+      <span></span>
+    <% end %>
+
+    <span class="text-sm opacity-70">Halaman <%= current %> dari <%= pages %></span>
+
+    <% if current < pages %>
+      <%= link_to "Berikutnya →", url_for(request.params.merge(page: current + 1)), class: "btn btn-sm" %>
+    <% else %>
+      <span></span>
+    <% end %>
+  </div>
+<% end %>

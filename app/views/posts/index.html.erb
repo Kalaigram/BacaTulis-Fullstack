@@ -1,0 +1,61 @@
+<div class="flex items-center justify-between gap-4 mb-6">
+  <h1 class="text-2xl font-bold">Daftar Post</h1>
+  <%= link_to "Buat Post Baru", new_post_path, class: "btn btn-primary" %>
+</div>
+
+<%= form_with url: posts_path, method: :get, class: "card bg-base-100 shadow-sm mb-4" do |form| %>
+  <div class="card-body flex-row flex-wrap items-end gap-2 p-4">
+    <%= form.label :q, "Cari", class: "label-text" %>
+    <%= form.text_field :q, value: params[:q], placeholder: "Cari judul atau isi…", class: "input input-sm" %>
+    <%= form.label :status, "Status", class: "label-text" %>
+    <%= form.select :status,
+                    options_for_select([ [ "Semua", "" ], [ "Publikasi", "published" ], [ "Draft", "draft" ] ], params[:status]),
+                    {},
+                    class: "select select-sm select-bordered" %>
+    <%= form.label :category_id, "Kategori", class: "label-text" %>
+    <%= form.select :category_id,
+                    options_from_collection_for_select(Category.order(:name), :id, :name, params[:category_id]),
+                    { include_blank: "Semua" },
+                    class: "select select-sm select-bordered" %>
+    <%= form.submit "Terapkan", class: "btn btn-sm btn-primary" %>
+    <% if params[:q].present? || params[:status].present? || params[:category_id].present? %>
+      <%= link_to "Reset", posts_path(scope: params[:scope]), class: "btn btn-sm btn-ghost" %>
+    <% end %>
+  </div>
+<% end %>
+
+<% if @posts.any? %>
+  <p class="text-sm opacity-70 mb-4"><%= @total %> post ditemukan</p>
+
+  <div class="grid gap-4">
+    <% @posts.each do |post| %>
+      <article class="card bg-base-100 shadow-sm">
+        <div class="card-body">
+          <div class="flex items-center justify-between gap-4">
+            <h2 class="card-title">
+              <%= link_to post.title, post, class: "link link-hover" %>
+            </h2>
+            <div class="flex items-center gap-2">
+              <% if post.category %>
+                <span class="badge badge-neutral badge-outline badge-sm"><%= post.category.name %></span>
+              <% end %>
+              <%= render "status_badge", post: post %>
+            </div>
+          </div>
+          <p class="text-sm opacity-70">oleh <%= post.user.email_address %> &middot; <%= time_ago_in_words(post.created_at) %> lalu</p>
+          <div class="card-actions">
+            <%= link_to "Baca", post, class: "btn btn-sm btn-ghost" %>
+          </div>
+        </div>
+      </article>
+    <% end %>
+  </div>
+
+  <%= render "pagination", total: @total, per_page: PostsController::PER_PAGE, page: params[:page] %>
+<% else %>
+  <div class="card bg-base-100 shadow-sm">
+    <div class="card-body">
+      <p>Belum ada post yang cocok. Buat yang pertama!</p>
+    </div>
+  </div>
+<% end %>

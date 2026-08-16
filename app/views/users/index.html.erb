@@ -1,0 +1,41 @@
+<h1 class="text-2xl font-bold mb-6">Pengguna</h1>
+
+<div class="card bg-base-100 shadow-sm">
+  <div class="overflow-x-auto">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Nama</th>
+          <th>Email</th>
+          <th>Peran</th>
+          <th>Jumlah Post</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @users.each do |user| %>
+          <tr>
+            <td><%= user.name.presence || "—" %></td>
+            <td><%= user.email_address %></td>
+            <td>
+              <%= form_with model: user, class: "inline-flex items-center gap-2" do |form| %>
+                <%= form.select :role,
+                                options_for_select([ [ "Admin", "admin" ], [ "User", "user" ] ], user.role),
+                                {},
+                                class: "select select-sm select-bordered",
+                                disabled: user == current_user %>
+                <%= form.submit "Simpan", class: "btn btn-xs", disabled: user == current_user %>
+              <% end %>
+            </td>
+            <td><%= user.posts.count %></td>
+            <td>
+              <% unless user == current_user %>
+                <%= button_to "Hapus", user, method: :delete, class: "btn btn-xs btn-error", data: { turbo_confirm: "Hapus akun #{user.email_address}? Post miliknya ikut terhapus." } %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

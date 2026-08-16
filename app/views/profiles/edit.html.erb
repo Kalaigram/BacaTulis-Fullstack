@@ -1,0 +1,41 @@
+<h1 class="text-2xl font-bold mb-6">Edit Profil</h1>
+
+<%= form_with model: current_user, url: profile_path, class: "card max-w-lg bg-base-100 shadow-sm" do |form| %>
+  <% if current_user.errors.any? %>
+    <div role="alert" class="alert alert-error m-4 mb-0">
+      <div>
+        <h2 class="font-bold">Form tidak valid, ada <%= current_user.errors.count %> kesalahan:</h2>
+        <ul class="list-disc list-inside text-sm mt-1">
+          <% current_user.errors.each do |error| %>
+            <li><%= error.full_message %></li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="card-body">
+    <fieldset class="fieldset">
+      <label class="fieldset-label">Nama
+        <%= form.text_field :name, class: "input w-full", placeholder: "Nama kamu" %>
+      </label>
+
+      <label class="fieldset-label">Email
+        <%= form.email_field :email_address, class: "input w-full", required: true, autocomplete: "username" %>
+      </label>
+
+      <label class="fieldset-label">Password baru (kosongkan jika tidak diubah)
+        <%= form.password_field :password, class: "input w-full", autocomplete: "new-password" %>
+      </label>
+
+      <label class="fieldset-label">Konfirmasi password baru
+        <%= form.password_field :password_confirmation, class: "input w-full", autocomplete: "new-password" %>
+      </label>
+    </fieldset>
+
+    <div class="card-actions justify-end">
+      <%= link_to "Batal", profile_path, class: "btn btn-ghost" %>
+      <%= form.submit "Simpan", class: "btn btn-primary" %>
+    </div>
+  </div>
+<% end %>

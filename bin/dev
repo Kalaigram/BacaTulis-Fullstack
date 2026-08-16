@@ -1,0 +1,13 @@
+#!/usr/bin/env ruby.exe
+# Runs the Rails server and the Tailwind CSS watcher side by side.
+# Stop both with Ctrl-C.
+
+watcher = Process.spawn("cmd", "/c", "npm run watch:css", out: $stdout, err: $stderr)
+server = Process.spawn("ruby", "bin/rails", "server", *ARGV, out: $stdout, err: $stderr)
+
+begin
+  Process.wait(server)
+ensure
+  Process.kill("INT", watcher) rescue nil
+  Process.wait(watcher) rescue nil
+end

@@ -1,0 +1,13 @@
+{
+  "name": "crud-ruby",
+  "private": true,
+  "scripts": {
+    "build:css": "tailwindcss -i ./app/assets/stylesheets/application.css -o ./app/assets/builds/tailwind.css --minify",
+    "watch:css": "tailwindcss -i ./app/assets/stylesheets/application.css -o ./app/assets/builds/tailwind.css --watch"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.0.0",
+    "daisyui": "^5.0.0",
+    "tailwindcss": "^4.0.0"
+  }
+}
