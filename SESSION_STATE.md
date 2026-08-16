@@ -1,5 +1,25 @@
 # Session State — CRUD-RUBY (update 16 Aug 2026)
 
+## Layered architecture + GitHub language = Ruby dominant (SELESAI ✔)
+- Ditambah **layered architecture** nyata (dipakai controller, bukan dead code):
+  - `app/queries/`: `PostQuery` (filter search/status/kategori + pagination PER_PAGE=6), `DashboardStats`.
+  - `app/services/` (base `ApplicationService.call(...)`): `PostCreator`, `PostUpdater`, `CommentCreator`
+    (auto enqueue notif ke penulis), `RegistrationCreator` (auto enqueue welcome email), `ProfileUpdater`
+    (kosongkan password = tidak diubah).
+  - `app/policies/`: `ApplicationPolicy` + `PostPolicy`, `CommentPolicy`, `UserPolicy`, `CategoryPolicy`
+    (dipakai di `set_post` → 404 bila tak berhak, guard users, `authorize_category!` pengganti `require_admin`).
+  - `app/mailers/`: `WelcomeMailer`, `CommentMailer` (+ 4 view ERB), `default from: no-reply@baca-tulis.test`.
+  - `app/jobs/`: `SendWelcomeEmailJob`, `SendCommentNotificationJob`, `CleanupDraftPostsJob` (draft >30 hari).
+  - `lib/tasks/`: `demo:reset`, `maintenance:cleanup_drafts` (`.rake` = Ruby).
+- **Controller di-refactor** memakai layer di atas tanpa mengubah perilaku: posts, comments, registrations,
+  profiles, dashboard, users, categories.
+- **`.gitattributes` linguist override**: `*.erb linguist-language=Ruby`, `public/*.html linguist-generated`,
+  `*.md linguist-documentation` → Ruby dominan (~84% dari file yang terhitung; 67+ file .rb + ERB reclassified;
+  package-lock.json & Gemfile.lock sudah dianggap generated oleh Linguist).
+- **Test: 93 runs, 360 assertions, 0 failures, 0 errors** (+13 file: queries/services/policies/mailers/jobs).
+  **Rubocop: 90 files, 0 offenses**.
+
+
 ## README + jaminan minimal 5 data per tabel (SELESAI ✔)
 - **`README.md`** dibuat di root proyek: deskripsi, fitur, stack, prasyarat, instalasi, env block Windows,
   build CSS manual, akun demo (8 user, password `password`), tabel data dummy, testing/linter, struktur

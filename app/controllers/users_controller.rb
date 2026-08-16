@@ -10,7 +10,7 @@ class UsersController < ApplicationController
   def update
     role = params.dig(:user, :role)
 
-    if @user == current_user && role != "admin"
+    if !UserPolicy.new(current_user, @user).update?
       redirect_to users_path, alert: "Tidak bisa mengubah peran akun sendiri."
     elsif @user.admin? && User.admin.count == 1 && role != "admin"
       redirect_to users_path, alert: "Setidaknya harus ada satu admin."
@@ -22,7 +22,7 @@ class UsersController < ApplicationController
   end
 
   def destroy
-    if @user == current_user
+    if !UserPolicy.new(current_user, @user).destroy?
       redirect_to users_path, alert: "Tidak bisa menghapus akun sendiri."
     elsif @user.destroy
       redirect_to users_path, notice: "Akun #{@user.email_address} dihapus."

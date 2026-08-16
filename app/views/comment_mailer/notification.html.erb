@@ -1,0 +1,5 @@
+<p><%= @comment.user.name %> menulis komentar baru di post kamu "<%= @post.title %>":</p>
+
+<blockquote><%= @comment.body %></blockquote>
+
+<p><%= link_to "Lihat komentar", post_url(@post) %></p>

@@ -51,7 +51,7 @@
     <% end %>
   </div>
 
-  <%= render "pagination", total: @total, per_page: PostsController::PER_PAGE, page: params[:page] %>
+  <%= render "pagination", total: @total, per_page: PostQuery::PER_PAGE, page: params[:page] %>
 <% else %>
   <div class="card bg-base-100 shadow-sm">
     <div class="card-body">

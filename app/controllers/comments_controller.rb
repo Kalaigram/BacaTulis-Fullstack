@@ -4,9 +4,9 @@ class CommentsController < ApplicationController
   before_action :set_comment, only: :destroy
 
   def create
-    comment = @post.comments.build(comment_params.merge(user: current_user))
+    service = CommentCreator.call(@post, current_user, comment_body)
 
-    if comment.save
+    if service.success?
       redirect_to @post, notice: "Komentar ditambahkan."
     else
       redirect_to @post, alert: "Komentar tidak boleh kosong."
@@ -14,7 +14,7 @@ class CommentsController < ApplicationController
   end
 
   def destroy
-    if @comment.user == current_user || current_user.admin?
+    if CommentPolicy.new(current_user, @comment).destroy?
       @comment.destroy
       redirect_to @comment.post, notice: "Komentar dihapus."
     else
@@ -32,7 +32,7 @@ class CommentsController < ApplicationController
     @comment = Comment.find(params[:id])
   end
 
-  def comment_params
-    params.expect(comment: [ :body ])
+  def comment_body
+    params.dig(:comment, :body)
   end
 end

@@ -8,7 +8,9 @@ class ProfilesController < ApplicationController
   end
 
   def update
-    if current_user.update(profile_params)
+    service = ProfileUpdater.call(current_user, profile_params)
+
+    if service.success?
       redirect_to profile_path, notice: "Profil berhasil diperbarui."
     else
       render :edit, status: :unprocessable_entity
@@ -18,7 +20,6 @@ class ProfilesController < ApplicationController
   private
 
   def profile_params
-    user_params = params.expect(user: [ :name, :email_address, :password, :password_confirmation ])
-    user_params[:password].blank? ? user_params.except(:password, :password_confirmation) : user_params
+    params.expect(user: [ :name, :email_address, :password, :password_confirmation ])
   end
 end

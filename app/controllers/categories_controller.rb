@@ -1,6 +1,6 @@
 class CategoriesController < ApplicationController
   before_action :require_authentication
-  before_action :require_admin
+  before_action :authorize_category!
   before_action :set_category, only: %i[edit update destroy]
 
   def index
@@ -38,6 +38,12 @@ class CategoriesController < ApplicationController
   end
 
   private
+
+  def authorize_category!
+    return if CategoryPolicy.new(current_user, Category).manage?
+
+    redirect_to root_path, alert: "Hanya admin yang bisa mengakses halaman ini."
+  end
 
   def set_category
     @category = Category.find_by!(slug: params[:id])
