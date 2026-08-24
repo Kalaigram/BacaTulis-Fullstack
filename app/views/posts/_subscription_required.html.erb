@@ -1,0 +1,22 @@
+<%# app/views/posts/_subscription_required.html.erb %>
+<% if post.paid? && !post.accessible_by?(current_user) %>
+  <div class="card bg-warning/10 border border-warning/30 mb-6">
+    <div class="card-body text-center py-8">
+      <div class="w-16 h-16 mx-auto mb-4 bg-warning/20 rounded-full flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-warning" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v-3m6 3h-12a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v6a2 2 0 01-2 2zm-6-9V4a1 1 0 011-1h4a1 1 0 011 1v2m-6 0h.01M12 12h.01M12 15h.01" /></svg>
+      </div>
+      <h3 class="text-lg font-bold mb-2">Konten Premium</h3>
+      <p class="opacity-70 mb-4 max-w-md mx-auto">
+        Artikel ini hanya tersedia untuk subscriber <strong><%= post.user.name.presence || post.user.email_address %></strong>.
+        Langganan mulai dari Rp 5.000/bulan.
+      </p>
+      <% if current_user %>
+        <%= link_to "Langganan Sekarang", subscriptions_new_path(creator_id: post.user.id), class: "btn btn-warning" %>
+      <% else %>
+        <%= link_to "Masuk untuk Langganan", new_session_path, class: "btn btn-primary" %>
+        <span class="mx-2">atau</span>
+        <%= link_to "Daftar", new_registration_path, class: "btn btn-outline" %>
+      <% end %>
+    </div>
+  </div>
+<% end %>

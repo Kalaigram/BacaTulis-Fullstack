@@ -1,0 +1,7 @@
+<%# app/views/posts/_paid_badge.html.erb %>
+<% if post.paid? %>
+  <span class="badge badge-warning badge-sm gap-1 flex items-center" title="Konten premium - butuh langganan">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v-3m6 3h-12a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v6a2 2 0 01-2 2zm-6-9V4a1 1 0 011-1h4a1 1 0 011 1v2m-6 0h.01M12 12h.01M12 15h.01" /></svg>
+    Premium
+  </span>
+<% end %>

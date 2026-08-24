@@ -1,0 +1,77 @@
+<div class="flex items-center justify-between gap-4 mb-6">
+  <h1 class="text-2xl font-bold">Pilih Paket Langganan</h1>
+  <%= link_to "Kembali", :back, class: "btn btn-ghost btn-sm" %>
+</div>
+
+<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-2 max-w-4xl">
+  <!-- Free Tier Info -->
+  <div class="card bg-base-100 shadow-sm border-2 border-primary">
+    <div class="card-body text-center">
+      <div class="badge badge-primary badge-lg mb-3">GRATIS</div>
+      <h3 class="text-2xl font-bold">Rp 0 / bulan</h3>
+      <p class="text-sm opacity-70 mt-2">Akses ke semua konten gratis</p>
+      <ul class="menu menu-compact mt-6">
+        <li><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg> Baca artikel gratis unlimited</li>
+        <li><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg> Komentar & diskusi</li>
+        <li><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg> Bookmark & reading list</li>
+        <li><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-base-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg> Konten premium (terkunci)</li>
+        <li><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-base-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg> Newsletter eksklusif</li>
+      </ul>
+      <div class="card-actions justify-center mt-4">
+        <button class="btn btn-outline btn-lg" disabled>Paket Saat Ini</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Basic Tier -->
+  <div class="card bg-base-100 shadow-sm">
+    <div class="card-body text-center">
+      <div class="badge badge-info badge-lg mb-3">BASIC</div>
+      <h3 class="text-2xl font-bold">Rp 5.000 <span class="text-sm opacity-70 font-normal">/ bulan</span></h3>
+      <p class="text-sm opacity-70 mt-2">Cocok untuk pembaca setia</p>
+      <ul class="menu menu-compact mt-6">
+        <li><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg> Semua fitur Gratis</li>
+        <li><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg> Akses artikel premium Basic</li>
+        <li><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg> Newsletter mingguan eksklusif</li>
+        <li><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg> Badge "Supporter" di profil</li>
+        <li><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-base-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg> Konten Premium (terkunci)</li>
+      </ul>
+      <div class="card-actions justify-center mt-4">
+        <%= button_to subscriptions_path(creator_id: @creator.id, price_id: @basic_price_id),
+                      method: :post,
+                      class: "btn btn-primary btn-lg w-full",
+                      data: { turbo_confirm: "Lanjutkan ke pembayaran Rp 5.000/bulan?" } do %>
+          Mulai Langganan Basic
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Premium Tier -->
+  <div class="card bg-base-100 shadow-sm border-2 border-warning">
+    <div class="card-body text-center">
+      <div class="badge badge-warning badge-lg mb-3">PREMIUM</div>
+      <h3 class="text-2xl font-bold">Rp 15.000 <span class="text-sm opacity-70 font-normal">/ bulan</span></h3>
+      <p class="text-sm opacity-70 mt-2">Untuk fans sejati & dukungan penuh</p>
+      <ul class="menu menu-compact mt-6">
+        <li><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg> Semua fitur Basic</li>
+        <li><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg> Akses SEMUA konten premium</li>
+        <li><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg> Akses awal artikel baru</li>
+        <li><svg xmlns="http://www.w3.org/2000.svg" class="h-5 w-5 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg> Badge "Premium Supporter"</li>
+        <li><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg> Prioritas support</li>
+      </ul>
+      <div class="card-actions justify-center mt-4">
+        <%= button_to subscriptions_path(creator_id: @creator.id, price_id: @premium_price_id),
+                      method: :post,
+                      class: "btn btn-warning btn-lg w-full",
+                      data: { turbo_confirm: "Lanjutkan ke pembayaran Rp 15.000/bulan?" } do %>
+          Mulai Langganan Premium
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="mt-8 text-center text-sm opacity-70">
+  <p>Pembayaran aman via Stripe. Bisa dibatalkan kapan saja dari <strong>Pengaturan Profil</strong>.</p>
+</div>

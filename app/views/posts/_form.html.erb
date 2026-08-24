@@ -68,6 +68,24 @@
                           {},
                           class: "select select-bordered w-full" %>
         </label>
+
+        <label class="fieldset-label">Akses Konten
+          <%= form.select :paid,
+                          options_for_select([ [ "Gratis (semua orang)", false ], [ "Premium (hanya subscriber)", true ] ], post.paid),
+                          {},
+                          class: "select select-bordered w-full",
+                          data: { action: "change->posts#togglePaidFields" } %>
+        </label>
+
+        <div id="subscription-tier-field" class="fieldset" style="display: <%= post.paid? ? 'block' : 'none' %>;">
+          <label class="fieldset-label">Paket Langganan
+            <%= form.select :subscription_tier,
+                            options_for_select([ [ "Basic (Rp 5.000/bln)", "basic" ], [ "Premium (Rp 15.000/bln)", "premium" ] ], post.subscription_tier),
+                            {},
+                            class: "select select-bordered w-full" %>
+            <p class="text-xs opacity-60 mt-1">Menentukan tier minimum subscriber yang bisa akses. Basic subscriber akses Basic & Premium. Premium subscriber akses semua.</p>
+          </label>
+        </div>
       </fieldset>
 
       <div class="card-actions justify-end">

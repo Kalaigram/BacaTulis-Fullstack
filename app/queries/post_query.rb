@@ -5,15 +5,16 @@ class PostQuery
 
   def initialize(user, scope: "mine")
     @user = user
-    @scope = user.admin? && scope != "mine" ? Post : user.posts
+    @scope = base_scope(scope)
   end
 
-  def filtered(q: nil, status: nil, category_id: nil, tag_id: nil)
+  def filtered(q: nil, status: nil, category_id: nil, tag_id: nil, paid: nil)
     @scope.order(created_at: :desc)
           .search(q)
           .by_status(status)
           .by_category(category_id)
           .by_tag(tag_id)
+          .by_paid(paid)
   end
 
   def page(relation, page)
@@ -22,5 +23,20 @@ class PostQuery
 
   def total(relation)
     relation.count
+  end
+
+  private
+
+  def base_scope(scope)
+    if @user.admin?
+      scope == "mine" ? @user.posts : Post
+    else
+      case scope
+      when "mine"
+        @user.posts
+      else
+        Post.visible_to(@user)
+      end
+    end
   end
 end

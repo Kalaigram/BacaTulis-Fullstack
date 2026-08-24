@@ -4,7 +4,13 @@ class PostPolicy < ApplicationPolicy
   end
 
   def show?
-    admin? || record.user_id == user&.id
+    return true if admin?
+    return true if record.user == user
+    return false unless record.published?
+    return true unless record.paid?
+    return true if user&.subscribed_to?(record.user)
+
+    false
   end
 
   def create?
@@ -12,10 +18,10 @@ class PostPolicy < ApplicationPolicy
   end
 
   def update?
-    show?
+    admin? || record.user == user
   end
 
   def destroy?
-    show?
+    admin? || record.user == user
   end
 end

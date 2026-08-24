@@ -14,10 +14,24 @@ class PostPolicyTest < ActiveSupport::TestCase
     assert policy.update?
   end
 
+  test "user can see free published posts from others" do
+    policy = PostPolicy.new(users(:user), posts(:admin_post))
+    assert policy.show?
+  end
+
   test "user cannot manage someone else's post" do
     policy = PostPolicy.new(users(:user), posts(:admin_post))
-    refute policy.show?
     refute policy.update?
     refute policy.destroy?
+  end
+
+  test "user cannot see draft posts from others" do
+    policy = PostPolicy.new(users(:user), posts(:admin_draft))
+    refute policy.show?
+  end
+
+  test "user can see their own draft posts" do
+    policy = PostPolicy.new(users(:user), posts(:user_draft))
+    assert policy.show?
   end
 end

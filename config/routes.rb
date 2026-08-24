@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
-  root "dashboard#index"
+  root "pages#landing"
+
+  get "dashboard", to: "dashboard#index", as: :dashboard
 
   resource :session
   resource :registration, only: %i[new create]
@@ -30,6 +32,16 @@ Rails.application.routes.draw do
   resources :reports, only: :create
   resources :users, only: %i[index update destroy]
 
+  resources :subscriptions, only: %i[new create] do
+    get :success, on: :collection
+    get :portal, on: :collection
+  end
+
+  namespace :creator do
+    resources :subscriptions, only: %i[index show]
+    resources :analytics, only: :index
+  end
+
   namespace :admin do
     resources :reports, only: %i[index update]
     resources :analytics, only: :index
@@ -44,6 +56,8 @@ Rails.application.routes.draw do
       get "me", to: "users#me"
     end
   end
+
+  post "webhooks/stripe", to: "webhooks#stripe"
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   get "up" => "rails/health#show", as: :rails_health_check

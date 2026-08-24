@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_24_004635) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_24_010003) do
   create_table "action_text_rich_texts", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.text "body", size: :long
     t.datetime "created_at", null: false
@@ -132,12 +132,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_24_004635) do
     t.bigint "category_id"
     t.datetime "created_at", null: false
     t.integer "likes_count", default: 0, null: false
+    t.boolean "paid", default: false, null: false
     t.integer "status", default: 1, null: false
+    t.integer "subscription_tier", default: 0, null: false
     t.string "title", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.integer "views_count", default: 0, null: false
     t.index ["category_id"], name: "index_posts_on_category_id"
+    t.index ["paid"], name: "index_posts_on_paid"
     t.index ["user_id"], name: "index_posts_on_user_id"
   end
 
@@ -164,6 +167,26 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_24_004635) do
     t.index ["user_id"], name: "index_sessions_on_user_id"
   end
 
+  create_table "subscriptions", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.datetime "canceled_at"
+    t.datetime "created_at", null: false
+    t.bigint "creator_id", null: false
+    t.datetime "current_period_end"
+    t.datetime "current_period_start"
+    t.integer "status", default: 0, null: false
+    t.string "stripe_customer_id"
+    t.string "stripe_price_id"
+    t.string "stripe_subscription_id"
+    t.bigint "subscriber_id", null: false
+    t.datetime "trial_end"
+    t.datetime "updated_at", null: false
+    t.index ["creator_id", "status"], name: "index_subscriptions_on_creator_id_and_status"
+    t.index ["creator_id"], name: "index_subscriptions_on_creator_id"
+    t.index ["stripe_subscription_id"], name: "index_subscriptions_on_stripe_subscription_id", unique: true
+    t.index ["subscriber_id", "creator_id"], name: "index_subscriptions_on_subscriber_id_and_creator_id", unique: true
+    t.index ["subscriber_id"], name: "index_subscriptions_on_subscriber_id"
+  end
+
   create_table "tags", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name", null: false
@@ -180,9 +203,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_24_004635) do
     t.string "name"
     t.string "password_digest", null: false
     t.integer "role", default: 0, null: false
+    t.string "stripe_account_id"
+    t.string "stripe_customer_id"
+    t.boolean "stripe_onboarding_complete", default: false, null: false
     t.datetime "updated_at", null: false
     t.index ["api_token"], name: "index_users_on_api_token", unique: true
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
+    t.index ["stripe_customer_id"], name: "index_users_on_stripe_customer_id", unique: true
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
@@ -203,4 +230,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_24_004635) do
   add_foreign_key "posts", "users"
   add_foreign_key "reports", "users", column: "reporter_id"
   add_foreign_key "sessions", "users"
+  add_foreign_key "subscriptions", "users", column: "creator_id"
+  add_foreign_key "subscriptions", "users", column: "subscriber_id"
 end

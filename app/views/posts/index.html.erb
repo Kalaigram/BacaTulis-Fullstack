@@ -22,8 +22,13 @@
                     options_from_collection_for_select(Tag.order(:name), :id, :name, params[:tag_id]),
                     { include_blank: "Semua" },
                     class: "select select-sm select-bordered" %>
+    <%= form.label :paid, "Akses", class: "label-text" %>
+    <%= form.select :paid,
+                    options_for_select([ [ "Semua", "" ], [ "Gratis", "false" ], [ "Premium", "true" ] ], params[:paid]),
+                    {},
+                    class: "select select-sm select-bordered" %>
     <%= form.submit "Terapkan", class: "btn btn-sm btn-primary" %>
-    <% if params[:q].present? || params[:status].present? || params[:category_id].present? || params[:tag_id].present? %>
+    <% if params[:q].present? || params[:status].present? || params[:category_id].present? || params[:tag_id].present? || params[:paid].present? %>
       <%= link_to "Reset", posts_path(scope: params[:scope]), class: "btn btn-sm btn-ghost" %>
     <% end %>
   </div>
@@ -45,6 +50,7 @@
                 <span class="badge badge-neutral badge-outline badge-sm"><%= post.category.name %></span>
               <% end %>
               <%= render "posts/tags", post: post %>
+              <%= render "posts/paid_badge", post: post %>
               <%= render "status_badge", post: post %>
             </div>
           </div>

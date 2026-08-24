@@ -1,0 +1,27 @@
+<%# app/views/shared/_pagination.html.erb %>
+<% if collection.respond_to?(:total_pages) && collection.total_pages > 1 %>
+  <nav class="flex items-center justify-center gap-1" aria-label="Pagination">
+    <% if collection.current_page > 1 %>
+      <%= link_to url_for(page: collection.current_page - 1), class: "btn btn-ghost btn-sm" do %>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+      <% end %>
+    <% end %>
+
+    <% start_page = [collection.current_page - 2, 1].max %>
+    <% end_page = [collection.current_page + 2, collection.total_pages].min %>
+
+    <% (start_page..end_page).each do |page_num| %>
+      <% if page_num == collection.current_page %>
+        <span class="btn btn-primary btn-sm"><%= page_num %></span>
+      <% else %>
+        <%= link_to page_num, url_for(page: page_num), class: "btn btn-ghost btn-sm" %>
+      <% end %>
+    <% end %>
+
+    <% if collection.current_page < collection.total_pages %>
+      <%= link_to url_for(page: collection.current_page + 1), class: "btn btn-ghost btn-sm" do %>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+      <% end %>
+    <% end %>
+  </nav>
+<% end %>

@@ -3,6 +3,7 @@ class Post < ApplicationRecord
   belongs_to :category, optional: true
 
   enum :status, { draft: 0, published: 1 }, default: :published
+  enum :subscription_tier, { free: 0, basic: 1, premium: 2 }, default: :free
 
   has_many :comments, dependent: :destroy
   has_many :post_tags, dependent: :destroy
@@ -27,7 +28,9 @@ class Post < ApplicationRecord
     next all if term.blank?
 
     like = "%#{sanitize_sql_like(term)}%"
-    where("title LIKE :q OR body LIKE :q", q: like)
+    rich_text_table = ActionText::RichText.table_name
+    joins("LEFT JOIN #{rich_text_table} ON #{rich_text_table}.record_type = 'Post' AND #{rich_text_table}.record_id = posts.id AND #{rich_text_table}.name = 'body'")
+      .where("posts.title LIKE :q OR #{rich_text_table}.body LIKE :q", q: like)
   }
   scope :by_status, ->(status) {
     case status.to_s
@@ -49,6 +52,29 @@ class Post < ApplicationRecord
 
     joins(:post_tags).where(post_tags: { tag_id: tag_id })
   }
+  scope :by_paid, ->(paid) {
+    next all if paid.blank?
+
+    where(paid: paid == "true")
+  }
+  scope :paid, -> { where(paid: true) }
+  scope :free, -> { where(paid: false) }
+  scope :visible_to, ->(user) {
+    return published.free if user.nil?
+
+    if user.admin?
+      Post.all
+    else
+      subscribed_creator_ids = Subscription.active_for_creator(user).select(:subscriber_id)
+      Post.where(paid: false, status: :published)
+          .or(Post.where(user: user))
+          .or(Post.where(paid: true, status: :published, user_id: subscribed_creator_ids))
+    end
+  }
+
+  def paid?
+    paid == true
+  end
 
   def liked_by?(user)
     likes.exists?(user: user)
@@ -56,6 +82,16 @@ class Post < ApplicationRecord
 
   def bookmarked_by?(user)
     bookmarks.exists?(user: user)
+  end
+
+  def accessible_by?(user)
+    return false unless published?
+    return true unless paid?
+    return true if user&.admin?
+    return true if user == self.user
+    return true if user&.subscribed_to?(self.user)
+
+    false
   end
 
   private

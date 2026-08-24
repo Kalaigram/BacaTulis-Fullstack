@@ -1,10 +1,11 @@
 class PostsController < ApplicationController
   before_action :require_authentication
   before_action :set_post, only: %i[show edit update destroy]
+  before_action :authorize_post, only: %i[edit update destroy]
 
   def index
-    query = PostQuery.new(current_user, scope: params[:scope])
-    filtered = query.filtered(q: params[:q], status: params[:status], category_id: params[:category_id], tag_id: params[:tag_id])
+    query = PostQuery.new(current_user, scope: params[:scope] || "all")
+    filtered = query.filtered(q: params[:q], status: params[:status], category_id: params[:category_id], tag_id: params[:tag_id], paid: params[:paid])
     @total = query.total(filtered)
     @posts = query.page(filtered, params[:page])
   end
@@ -55,7 +56,13 @@ class PostsController < ApplicationController
     raise ActiveRecord::RecordNotFound
   end
 
+  def authorize_post
+    return if PostPolicy.new(current_user, @post).update?
+
+    raise ActiveRecord::RecordNotFound
+  end
+
   def post_params
-    params.expect(post: [ :title, :body, :status, :category_id, :hero_image, :remove_hero_image, { tag_ids: [], images: [], remove_image_ids: [] } ])
+    params.expect(post: [ :title, :body, :status, :category_id, :paid, :subscription_tier, :hero_image, :remove_hero_image, { tag_ids: [], images: [], remove_image_ids: [] } ])
   end
 end

@@ -13,27 +13,36 @@
       </div>
     </div>
 
-    <%= render "status_badge", post: @post %>
-    <%= render "tags", post: @post %>
+    <div class="flex items-center gap-2 mb-2">
+      <%= render "status_badge", post: @post %>
+      <%= render "paid_badge", post: @post %>
+      <%= render "tags", post: @post %>
+    </div>
 
     <p class="text-sm opacity-70 mt-2">
-      oleh <%= @post.user.email_address %> &middot; <%= l @post.created_at, format: :long %>
+      oleh <%= link_to @post.user.name.presence || @post.user.email_address, profile_path, class: "link link-hover" %> &middot; <%= l @post.created_at, format: :long %>
       <% if @post.category %>
         &middot; <span class="badge badge-neutral badge-outline badge-sm"><%= @post.category.name %></span>
       <% end %>
     </p>
 
-    <div class="post-body mt-4"><%= @post.body %></div>
+    <%= render "subscription_required", post: @post %>
 
-    <%= render "images", post: @post %>
+    <% if @post.accessible_by?(current_user) %>
+      <div class="post-body mt-4"><%= @post.body %></div>
+
+      <%= render "images", post: @post %>
+    <% end %>
   </div>
 </article>
 
-<div class="mt-6 flex items-center gap-2">
-  <%= link_to "Kembali", posts_path, class: "btn btn-ghost" %>
-  <%= link_to "Edit", edit_post_path(@post), class: "btn" %>
-  <%= button_to "Hapus", @post, method: :delete, class: "btn btn-error", data: { turbo_confirm: "Yakin ingin menghapus post ini?" } %>
-</div>
+<% if @post.accessible_by?(current_user) || @post.user == current_user || current_user&.admin? %>
+  <div class="mt-6 flex items-center gap-2">
+    <%= link_to "Kembali", posts_path, class: "btn btn-ghost" %>
+    <%= link_to "Edit", edit_post_path(@post), class: "btn" %>
+    <%= button_to "Hapus", @post, method: :delete, class: "btn btn-error", data: { turbo_confirm: "Yakin ingin menghapus post ini?" } %>
+  </div>
+<% end %>
 
 <div class="card bg-base-100 shadow-sm mt-6">
   <div class="card-body">
@@ -48,6 +57,9 @@
             <p class="text-sm font-semibold">
               <%= comment.user.name.presence || comment.user.email_address %>
               <span class="badge <%= comment.user.role == "admin" ? "badge-primary" : "badge-info" %> badge-xs"><%= comment.user.role %></span>
+              <% if comment.user.subscribed_to?(@post.user) %>
+                <span class="badge badge-primary badge-xs">Subscriber</span>
+              <% end %>
             </p>
             <span class="text-xs opacity-60"><%= time_ago_in_words(comment.created_at) %> lalu</span>
           </div>
@@ -66,13 +78,23 @@
       <% end %>
     </div>
 
-    <%= form_with model: @post.comments.build, url: post_comments_path(@post), class: "mt-4" do |form| %>
-      <fieldset class="fieldset">
-        <label class="fieldset-label">Tambah komentar
-          <%= form.textarea :body, rows: 3, class: "textarea w-full", placeholder: "Tulis komentar…" %>
-        </label>
-        <%= form.submit "Kirim Komentar", class: "btn btn-primary mt-2" %>
-      </fieldset>
+    <% if @post.accessible_by?(current_user) %>
+      <%= form_with model: @post.comments.build, url: post_comments_path(@post), class: "mt-4" do |form| %>
+        <fieldset class="fieldset">
+          <label class="fieldset-label">Tambah komentar
+            <%= form.textarea :body, rows: 3, class: "textarea w-full", placeholder: "Tulis komentar…" %>
+          </label>
+          <%= form.submit "Kirim Komentar", class: "btn btn-primary mt-2" %>
+        </fieldset>
+      <% end %>
+    <% else %>
+      <div class="alert alert-info mt-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+        <div>
+          <h3 class="font-bold">Langganan diperlukan untuk berkomentar</h3>
+          <div class="text-sm opacity-80">Hanya subscriber yang bisa berkomentar pada konten premium.</div>
+        </div>
+      </div>
     <% end %>
   </div>
 </div>

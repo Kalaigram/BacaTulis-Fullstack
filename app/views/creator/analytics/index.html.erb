@@ -1,0 +1,141 @@
+<div class="flex items-center justify-between gap-4 mb-6">
+  <h1 class="text-2xl font-bold">Analytics Kreator</h1>
+  <div class="dropdown dropdown-end">
+    <label tabindex="0" class="btn btn-outline btn-sm">
+      Periode: <%= @period.humanize %>
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+    </label>
+    <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-10 w-40 p-2 shadow">
+      <li><%= link_to "Minggu Ini", creator_analytics_path(period: "week") %></li>
+      <li><%= link_to "Bulan Ini", creator_analytics_path(period: "month") %></li>
+      <li><%= link_to "Tahun Ini", creator_analytics_path(period: "year") %></li>
+    </ul>
+  </div>
+</div>
+
+<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+  <div class="card bg-base-100 shadow-sm">
+    <div class="card-body">
+      <span class="text-sm opacity-70">MRR (Bulanan)</span>
+      <span class="text-3xl font-bold text-success">Rp <%= number_with_delimiter(@analytics[:mrr]) %></span>
+    </div>
+  </div>
+
+  <div class="card bg-base-100 shadow-sm">
+    <div class="card-body">
+      <span class="text-sm opacity-70">Subscriber Aktif</span>
+      <span class="text-3xl font-bold"><%= @analytics[:subscriber_count] %></span>
+    </div>
+  </div>
+
+  <div class="card bg-base-100 shadow-sm">
+    <div class="card-body">
+      <span class="text-sm opacity-70">Baru Bulan Ini</span>
+      <span class="text-3xl font-bold text-info"><%= @analytics[:new_subscribers_this_month] %></span>
+    </div>
+  </div>
+
+  <div class="card bg-base-100 shadow-sm">
+    <div class="card-body">
+      <span class="text-sm opacity-70">Churn Rate (3bln)</span>
+      <span class="text-3xl font-bold text-warning"><%= @analytics[:churn_rate] %>%</span>
+    </div>
+  </div>
+</div>
+
+<div class="grid gap-4 lg:grid-cols-2 mb-8">
+  <div class="card bg-base-100 shadow-sm">
+    <div class="card-body">
+      <h2 class="card-title text-lg mb-4">Pendapatan per Bulan (12 Bulan)</h2>
+      <canvas id="revenueChart" height="100"></canvas>
+    </div>
+  </div>
+
+  <div class="card bg-base-100 shadow-sm">
+    <div class="card-body">
+      <h2 class="card-title text-lg mb-4">Distribusi Paket</h2>
+      <canvas id="tierChart" height="100"></canvas>
+    </div>
+  </div>
+</div>
+
+<div class="card bg-base-100 shadow-sm mb-8">
+  <div class="card-body">
+    <h2 class="card-title text-lg mb-4">Artikel Premium Terpopuler</h2>
+    <% if @analytics[:top_paid_posts].any? %>
+      <div class="overflow-x-auto">
+        <table class="table table-zebra">
+          <thead>
+            <tr>
+              <th>Artikel</th>
+              <th>Paket</th>
+              <th>Views</th>
+              <th>Tanggal</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @analytics[:top_paid_posts].each do |post| %>
+              <tr>
+                <td><%= link_to post.title, post, class: "link link-hover" %></td>
+                <td><span class="badge <%= post.subscription_tier == 'premium' ? 'badge-warning' : 'badge-info' %>"><%= post.subscription_tier.humanize %></span></td>
+                <td><%= post.views_count %></td>
+                <td><%= l post.created_at.to_date, format: :long %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <p class="text-center opacity-70 py-8">Belum ada artikel premium.</p>
+    <% end %>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("turbo:load", function() {
+    // Revenue Chart
+    const revCtx = document.getElementById('revenueChart');
+    if (revCtx && !revCtx.chart) {
+      const data = <%= @analytics[:revenue_by_month].to_json.html_safe %>;
+      const labels = Object.keys(data).sort();
+      const values = labels.map(l => data[l] / 1000);
+
+      revCtx.chart = new Chart(revCtx, {
+        type: 'line',
+        data: {
+          labels: labels.map(l => new Date(l).toLocaleDateString('id-ID', { month: 'short', year: '2-digit' })),
+          datasets: [{
+            label: 'MRR (ribu Rp)',
+            data: values,
+            borderColor: 'rgb(34, 197, 94)',
+            backgroundColor: 'rgba(34, 197, 94, 0.1)',
+            tension: 0.3,
+            fill: true
+          }]
+        },
+        options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+      });
+    }
+
+    // Tier Chart
+    const tierCtx = document.getElementById('tierChart');
+    if (tierCtx && !tierCtx.chart) {
+      const data = <%= @analytics[:subscription_tiers].to_json.html_safe %>;
+      const labels = Object.keys(data);
+      const values = Object.values(data);
+
+      tierCtx.chart = new Chart(tierCtx, {
+        type: 'doughnut',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: values,
+            backgroundColor: ['rgb(59, 130, 246)', 'rgb(245, 158, 11)'],
+            borderWidth: 0
+          }]
+        },
+        options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+      });
+    }
+  });
+</script>

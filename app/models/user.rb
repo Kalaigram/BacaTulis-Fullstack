@@ -4,6 +4,8 @@ class User < ApplicationRecord
 
   enum :role, { user: 0, admin: 1 }, default: :user
 
+  include Subscribable
+
   has_many :sessions, dependent: :destroy
   has_many :posts, dependent: :destroy
   has_many :comments, dependent: :destroy
@@ -27,5 +29,13 @@ class User < ApplicationRecord
 
   def regenerate_api_token!
     update!(api_token: SecureRandom.hex(32))
+  end
+
+  def creator?
+    true
+  end
+
+  def can_receive_payments?
+    stripe_onboarding_complete? && stripe_account_id.present?
   end
 end

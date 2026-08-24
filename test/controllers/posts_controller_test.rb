@@ -6,9 +6,18 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to new_session_url
   end
 
-  test "user sees only their own posts" do
+  test "user sees their own posts and free posts from others" do
     sign_in users(:user)
     get posts_url
+    assert_response :success
+    assert_select "h2", text: "Post milik user"
+    # Free published posts from others should be visible
+    assert_select "h2", text: "Post milik admin"
+  end
+
+  test "user can filter to see only their own posts" do
+    sign_in users(:user)
+    get posts_url(scope: "mine")
     assert_response :success
     assert_select "h2", text: "Post milik user"
     assert_select "h2", text: "Post milik admin", count: 0
@@ -22,15 +31,27 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     assert_select "h2", text: "Post milik admin"
   end
 
-  test "user cannot show another user's post" do
+  test "user can show free published posts from others" do
     sign_in users(:user)
     get post_url(posts(:admin_post))
-    assert_response :not_found
+    assert_response :success
   end
 
   test "admin can show any post" do
     sign_in users(:admin)
     get post_url(posts(:user_post))
+    assert_response :success
+  end
+
+  test "user cannot show draft posts from others" do
+    sign_in users(:user)
+    get post_url(posts(:admin_draft))
+    assert_response :not_found
+  end
+
+  test "user can show their own draft posts" do
+    sign_in users(:user)
+    get post_url(posts(:user_draft))
     assert_response :success
   end
 

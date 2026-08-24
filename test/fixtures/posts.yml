@@ -17,3 +17,9 @@ user_draft:
   body: Isi draft yang belum dipublikasi.
   user: user
   status: draft
+
+admin_draft:
+  title: Draft rahasia admin
+  body: Isi draft admin.
+  user: admin
+  status: draft

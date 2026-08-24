@@ -1,18 +1,183 @@
-<div class="card max-w-lg bg-base-100 shadow-sm">
-  <div class="card-body">
-    <h1 class="card-title text-2xl">Profil</h1>
+<div class="grid gap-6 lg:grid-cols-3">
+  <h1 class="text-2xl font-bold mb-6 lg:hidden">Profil</h1>
+  <!-- Profile Card -->
+  <div class="lg:col-span-1">
+    <div class="card bg-base-100 shadow-sm sticky top-24">
+      <div class="card-body text-center">
+        <% if current_user.avatar.attached? %>
+          <%= image_tag current_user.avatar_variant(120), class: "w-32 h-32 rounded-full mx-auto mb-4 object-cover border-4 border-base-200" %>
+        <% else %>
+          <div class="w-32 h-32 rounded-full mx-auto mb-4 bg-primary flex items-center justify-center text-primary-content font-bold text-4xl border-4 border-base-200">
+            <%= current_user.email_address.first.upcase %>
+          </div>
+        <% end %>
 
-    <div class="space-y-1 mt-2">
-      <p><span class="opacity-70">Nama:</span> <%= current_user.name.presence || "—" %></p>
-      <p><span class="opacity-70">Email:</span> <%= current_user.email_address %></p>
-      <p>
-        <span class="opacity-70">Peran:</span>
-        <span class="badge <%= current_user.role == "admin" ? "badge-primary" : "badge-info" %>"><%= current_user.role %></span>
-      </p>
+        <h2 class="card-title text-xl"><%= current_user.name.presence || current_user.email_address %></h2>
+        <p class="opacity-60 text-sm"><%= current_user.email_address %></p>
+
+        <div class="flex items-center justify-center gap-2 mt-3">
+          <span class="badge <%= current_user.role == "admin" ? "badge-primary" : "badge-info" %>"><%= current_user.role %></span>
+          <% if current_user.active_subscriber_count > 0 %>
+            <span class="badge badge-warning gap-1">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v-3m6 3h-12a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v6a2 2 0 01-2 2zm-6-9V4a1 1 0 011-1h4a1 1 0 011 1v2m-6 0h.01M12 12h.01M12 15h.01" /></svg>
+              <%= current_user.active_subscriber_count %> Subscriber
+            </span>
+          <% end %>
+        </div>
+
+        <div class="divider my-4">Statistik</div>
+
+        <div class="grid grid-cols-3 gap-2 text-center">
+          <div>
+            <div class="text-2xl font-bold"><%= current_user.posts.published.count %></div>
+            <div class="text-xs opacity-60">Post</div>
+          </div>
+          <div>
+            <div class="text-2xl font-bold"><%= current_user.posts.published.paid.count %></div>
+            <div class="text-xs opacity-60">Premium</div>
+          </div>
+          <div>
+            <div class="text-2xl font-bold"><%= current_user.posts.published.sum(:views_count) %></div>
+            <div class="text-xs opacity-60">Views</div>
+          </div>
+        </div>
+
+        <div class="card-actions justify-center mt-4">
+          <%= link_to "Edit Profil", edit_profile_path, class: "btn btn-primary w-full" %>
+        </div>
+
+        <% if current_user.creator? && StripeService.configured? %>
+          <div class="divider my-4">Monetisasi</div>
+          <div class="card-actions justify-center">
+            <%= link_to "Kelola Subscriber", creator_subscriptions_path, class: "btn btn-outline w-full" %>
+          </div>
+          <div class="card-actions justify-center">
+            <%= link_to "Analytics", creator_analytics_path, class: "btn btn-ghost w-full" %>
+          </div>
+          <% unless current_user.can_receive_payments? %>
+            <div class="card-actions justify-center">
+              <%= link_to "Aktifkan Pembayaran", "#", class: "btn btn-warning w-full", data: { turbo_confirm: "Fitur ini memerlukan Stripe Connect. Hubungi admin." } %>
+            </div>
+          <% end %>
+        <% end %>
+
+        <div class="divider my-4">Langganan Saya</div>
+        <div class="card-actions justify-center">
+          <%= link_to "Kelola Langganan", portal_subscriptions_path, class: "btn btn-outline w-full" %>
+        </div>
+        <div class="card-actions justify-center">
+          <%= link_to "Reading List", bookmarks_path, class: "btn btn-ghost w-full" %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Activity Feed -->
+  <div class="lg:col-span-2 space-y-6">
+    <!-- My Posts -->
+    <div class="card bg-base-100 shadow-sm">
+      <div class="card-body">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="card-title text-lg">Post Saya</h2>
+          <%= link_to "Semua Post", posts_path(scope: "mine"), class: "btn btn-ghost btn-sm" %>
+        </div>
+        <% my_posts = current_user.posts.order(created_at: :desc).limit(5) %>
+        <% if my_posts.any? %>
+          <div class="space-y-3">
+            <% my_posts.each do |post| %>
+              <div class="flex items-center justify-between gap-4 p-3 bg-base-200/50 rounded-lg">
+                <div class="flex items-center gap-3 min-w-0 flex-1">
+                  <% if post.hero_image.attached? %>
+                    <%= image_tag post.hero_image.variant(resize_to_limit: [60, 45]), class: "w-12 h-12 rounded-lg object-cover" %>
+                  <% else %>
+                    <div class="w-12 h-12 rounded-lg bg-base-300 flex items-center justify-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                    </div>
+                  <% end %>
+                  <div class="min-w-0">
+                    <p class="font-medium truncate"><%= link_to post.title, post, class: "link link-hover" %></p>
+                    <p class="text-xs opacity-60"><%= l post.created_at, format: :long %></p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                  <%= render "posts/paid_badge", post: post %>
+                  <%= render "posts/status_badge", post: post %>
+                  <%= link_to post, class: "btn btn-ghost btn-xs" do %>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <p class="text-center opacity-60 py-8">Belum ada post. <strong><%= link_to "Buat yang pertama", new_post_path, class: "link" %></strong></p>
+        <% end %>
+      </div>
     </div>
 
-    <div class="card-actions mt-4">
-      <%= link_to "Edit Profil", edit_profile_path, class: "btn btn-primary" %>
-    </div>
+    <!-- My Subscriptions -->
+    <% if current_user.active_subscriptions_as_subscriber.any? %>
+      <div class="card bg-base-100 shadow-sm">
+        <div class="card-body">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="card-title text-lg">Langganan Aktif (<%= current_user.active_subscriptions_as_subscriber.count %>)</h2>
+            <%= link_to "Kelola", portal_subscriptions_path, class: "btn btn-ghost btn-sm" %>
+          </div>
+          <div class="grid gap-3 sm:grid-cols-2">
+            <% current_user.active_subscriptions_as_subscriber.includes(:creator).each do |sub| %>
+              <div class="card bg-base-200/50 border border-base-300">
+                <div class="card-body p-4">
+                  <div class="flex items-center gap-3">
+                    <% if sub.creator.avatar.attached? %>
+                      <%= image_tag sub.creator.avatar_variant(40), class: "w-10 h-10 rounded-full" %>
+                    <% else %>
+                      <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-content font-bold">
+                        <%= sub.creator.email_address.first.upcase %>
+                      </div>
+                    <% end %>
+                    <div class="flex-1 min-w-0">
+                      <p class="font-medium truncate"><%= link_to sub.creator.name.presence || sub.creator.email_address, profile_path, class: "link link-hover" %></p>
+                      <p class="text-xs opacity-60"><%= sub.tier_name %> · Rp <%= number_with_delimiter(sub.monthly_amount) %>/bln</p>
+                    </div>
+                    <span class="badge <%= sub.tier_name == 'Premium' ? 'badge-warning' : 'badge-info' %>"><%= sub.tier_name %></span>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <!-- My Bookmarks -->
+    <% if current_user.bookmarked_posts.any? %>
+      <div class="card bg-base-100 shadow-sm">
+        <div class="card-body">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="card-title text-lg">Reading List (<%= current_user.bookmarked_posts.count %>)</h2>
+            <%= link_to "Lihat Semua", bookmarks_path, class: "btn btn-ghost btn-sm" %>
+          </div>
+          <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <% current_user.bookmarked_posts.includes(:user, :category).limit(6).each do |post| %>
+              <article class="card bg-base-100 shadow-sm border border-base-200 hover:border-primary/50 transition-colors">
+                <div class="card-body p-3">
+                  <% if post.hero_image.attached? %>
+                    <%= link_to post do %>
+                      <%= image_tag post.hero_image.variant(resize_to_limit: [300, 160]), class: "w-full h-32 object-cover rounded-lg mb-2" %>
+                    <% end %>
+                  <% end %>
+                  <h3 class="font-medium text-sm line-clamp-2"><%= link_to post.title, post, class: "link link-hover" %></h3>
+                  <p class="text-xs opacity-60 mt-1"><%= post.user.email_address %> · <%= time_ago_in_words(post.created_at) %> lalu</p>
+                  <div class="flex items-center gap-1 mt-2">
+                    <%= render "posts/paid_badge", post: post %>
+<%= render "posts/status_badge", post: post %>
+                  </div>
+                </div>
+              </article>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
   </div>
 </div>
