@@ -1,0 +1,8 @@
+<%# app/views/posts/_tags.html.erb %>
+<% if post.tags.any? %>
+  <div class="flex flex-wrap gap-1 mt-2">
+    <% post.tags.each do |tag| %>
+      <%= link_to tag.name, posts_path(tag_id: tag.id), class: "badge badge-primary badge-sm" %>
+    <% end %>
+  </div>
+<% end %>

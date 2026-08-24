@@ -1,0 +1,47 @@
+<div class="flex items-center justify-between gap-4 mb-6">
+  <h1 class="text-2xl font-bold">Notifikasi</h1>
+  <% if @unread_count > 0 %>
+    <%= link_to mark_all_as_read_notifications_path, method: :patch, class: "btn btn-sm btn-primary" do %>
+      Tandai Semua Dibaca (<%= @unread_count %>)
+    <% end %>
+  <% end %>
+</div>
+
+<% if @notifications.any? %>
+  <div class="card bg-base-100 shadow-sm">
+    <div class="card-body space-y-3">
+      <% @notifications.each do |notification| %>
+        <div class="border-base-300 border-t pt-3 first:border-t-0 first:pt-0 <%= 'opacity-60' if notification.read? %>">
+          <div class="flex items-start justify-between gap-4">
+            <div class="flex-1">
+              <p class="text-sm">
+                <strong><%= notification.actor.name.presence || notification.actor.email_address %></strong>
+                <% case notification.action %>
+                  <% when "liked" %>
+                    menyukai post
+                  <% when "commented" %>
+                    berkomentar di
+                  <% when "mentioned" %>
+                    menyebut Anda di
+                <% end %>
+                <%= link_to notification.notifiable.title, notification.notifiable, class: "link" %>
+              </p>
+              <p class="text-xs opacity-60 mt-1"><%= time_ago_in_words(notification.created_at) %> lalu</p>
+            </div>
+            <% unless notification.read? %>
+              <%= link_to mark_as_read_notification_path(notification), method: :patch, class: "btn btn-xs btn-ghost" do %>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% else %>
+  <div class="card bg-base-100 shadow-sm">
+    <div class="card-body">
+      <p class="text-center">Belum ada notifikasi.</p>
+    </div>
+  </div>
+<% end %>

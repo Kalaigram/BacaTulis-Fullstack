@@ -1,0 +1,14 @@
+<%# app/views/posts/_like_button.html.erb %>
+<%= turbo_frame_tag "like_#{post.id}" do %>
+  <button class="btn btn-ghost btn-sm <%= post.liked_by?(current_user) ? 'btn-error' : '' %>"
+          data-controller="likes"
+          data-action="click->likes#toggle"
+          data-likes-url-value="<%= post_likes_path(post) %>"
+          data-likes-destroy-url-value="<%= post.liked_by?(current_user) ? like_path(post.likes.find_by(user: current_user)) : '' %>"
+          data-likes-count-value="<%= post.likes_count %>">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 <%= post.liked_by?(current_user) ? 'fill-current' : '' %>" viewBox="0 0 20 20" fill="currentColor">
+      <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
+    </svg>
+    <span class="ml-1 likes-count"><%= post.likes_count %></span>
+  </button>
+<% end %>

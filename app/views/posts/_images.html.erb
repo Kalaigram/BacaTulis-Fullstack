@@ -1,0 +1,10 @@
+<%# app/views/posts/_images.html.erb %>
+<% if post.images.attached? && post.images.count > 0 %>
+  <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <% post.images.each do |image| %>
+      <div class="rounded-lg overflow-hidden">
+        <%= image_tag image.variant(resize_to_limit: [800, 600]), class: "w-full h-48 object-cover" %>
+      </div>
+    <% end %>
+  </div>
+<% end %>

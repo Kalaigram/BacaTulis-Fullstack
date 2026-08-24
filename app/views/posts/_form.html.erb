@@ -1,4 +1,4 @@
-<%= form_with(model: post) do |form| %>
+<%= form_with(model: post, html: { multipart: true }) do |form| %>
   <% if post.errors.any? %>
     <div role="alert" class="alert alert-error mb-4">
       <div>
@@ -20,7 +20,37 @@
         </label>
 
         <label class="fieldset-label">Isi
-          <%= form.textarea :body, rows: 8, class: "textarea w-full" %>
+          <%= form.rich_text_area :body, class: "w-full" %>
+        </label>
+
+        <label class="fieldset-label">Gambar Utama (Hero Image)
+          <%= form.file_field :hero_image, accept: "image/*", class: "file-input file-input-bordered w-full" %>
+          <% if post.hero_image.attached? %>
+            <div class="mt-2">
+              <%= image_tag post.hero_image.variant(resize_to_limit: [300, 200]), class: "rounded-lg" %>
+              <label class="label cursor-pointer mt-1">
+                <input type="checkbox" name="post[remove_hero_image]" value="1" class="checkbox checkbox-primary">
+                <span class="label-text text-error">Hapus gambar ini</span>
+              </label>
+            </div>
+          <% end %>
+        </label>
+
+        <label class="fieldset-label">Gambar Tambahan
+          <%= form.file_field :images, accept: "image/*", multiple: true, class: "file-input file-input-bordered w-full" %>
+          <% if post.images.attached? %>
+            <div class="mt-2 grid gap-2 sm:grid-cols-3">
+              <% post.images.each do |image| %>
+                <div class="relative group">
+                  <%= image_tag image.variant(resize_to_limit: [150, 150]), class: "rounded-lg w-full h-24 object-cover" %>
+                  <label class="absolute inset-0 bg-black/50 text-white opacity-0 group-hover:opacity-100 flex items-center justify-center cursor-pointer transition-opacity rounded-lg">
+                    <input type="checkbox" name="post[remove_image_ids][]" value="<%= image.id %>" class="sr-only peer">
+                    <span class="peer-checked:opacity-100">Hapus</span>
+                  </label>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
         </label>
 
         <label class="fieldset-label">Kategori
@@ -29,6 +59,8 @@
                           { include_blank: "Tanpa kategori" },
                           class: "select select-bordered w-full" %>
         </label>
+
+        <%= render "tag_form", post: post %>
 
         <label class="fieldset-label">Status
           <%= form.select :status,

@@ -4,12 +4,46 @@ Rails.application.routes.draw do
   resource :session
   resource :registration, only: %i[new create]
   resource :profile, only: %i[show edit update]
+
   resources :posts do
     resources :comments, only: :create
+    resources :likes, only: %i[create destroy]
+    resources :bookmarks, only: %i[create destroy]
+    resources :reports, only: :create
   end
-  resources :comments, only: :destroy
+
+  resources :comments, only: :destroy do
+    resources :reports, only: :create
+  end
+
   resources :categories, except: :show
+  resources :tags, only: %i[index create destroy]
+  resources :bookmarks, only: :index
+  resources :notifications, only: %i[index] do
+    collection do
+      patch :mark_all_as_read
+    end
+    member do
+      patch :mark_as_read
+    end
+  end
+  resources :reports, only: :create
   resources :users, only: %i[index update destroy]
+
+  namespace :admin do
+    resources :reports, only: %i[index update]
+    resources :analytics, only: :index
+    get "analytics/post/:id", to: "analytics#post", as: :post_analytics
+  end
+
+  namespace :api do
+    namespace :v1 do
+      resources :posts, only: %i[index show create update destroy]
+      resources :comments, only: %i[index create]
+      resources :tags, only: :index
+      get "me", to: "users#me"
+    end
+  end
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   get "up" => "rails/health#show", as: :rails_health_check

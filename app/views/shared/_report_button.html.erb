@@ -1,0 +1,37 @@
+<%# app/views/shared/_report_button.html.erb %>
+<% if current_user != reportable.user %>
+  <button class="btn btn-ghost btn-xs" 
+          data-controller="report"
+          data-action="click->report#showModal"
+          data-report-reportable-type-value="<%= reportable.class.name %>"
+          data-report-reportable-id-value="<%= reportable.id %>">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+    Laporkan
+  </button>
+<% end %>
+
+<%# Modal %>
+<div class="modal" id="report-modal" data-report-target="modal">
+  <div class="modal-box">
+    <h3 class="font-bold text-lg mb-4">Laporkan Konten</h3>
+    <%= form_with url: reports_path, method: :post, class: "space-y-4", data: { report_target: "form" } do |form| %>
+      <%= form.hidden_field :reportable_type, data: { report_target: "reportableType" } %>
+      <%= form.hidden_field :reportable_id, data: { report_target: "reportableId" } %>
+
+      <div>
+        <label class="label"><span class="label-text">Alasan</span></label>
+        <%= form.select :reason, options_for_select(Report.reasons.keys.map { |k| [k.humanize, k] }), {}, class: "select select-bordered w-full" %>
+      </div>
+
+      <div>
+        <label class="label"><span class="label-text">Deskripsi (opsional)</span></label>
+        <%= form.textarea :description, rows: 3, class: "textarea textarea-bordered w-full", placeholder: "Jelaskan alasan laporan..." %>
+      </div>
+
+      <div class="modal-action">
+        <%= form.submit "Kirim Laporan", class: "btn btn-primary" %>
+        <button type="button" class="btn btn-ghost" data-action="click->report#hideModal">Batal</button>
+      </div>
+    <% end %>
+  </div>
+</div>

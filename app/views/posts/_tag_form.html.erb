@@ -1,0 +1,24 @@
+<%# app/views/posts/_tag_form.html.erb %>
+<fieldset class="fieldset">
+  <label class="fieldset-label">Tags
+    <div class="flex flex-wrap gap-1 mb-2" id="tag-chips">
+      <% post.tags.each do |tag| %>
+        <span class="badge badge-primary badge-sm flex items-center gap-1">
+          <%= tag.name %>
+          <input type="hidden" name="post[tag_ids][]" value="<%= tag.id %>">
+          <button type="button" class="btn btn-xs btn-ghost" data-action="click->tags#removeTag" data-tag-id-value="<%= tag.id %>">×</button>
+        </span>
+      <% end %>
+    </div>
+    <input type="text" 
+           id="tag-input" 
+           placeholder="Ketik tag lalu tekan Enter..." 
+           class="input input-sm" 
+           data-controller="tags"
+           data-action="keydown.enter->tags#addTag"
+           data-tags-url-value="<%= tags_path %>"
+           data-tag-chips-target-value="#tag-chips"
+           data-tag-input-target-value="#tag-input">
+    <p class="text-xs opacity-60 mt-1">Pisahkan tag dengan koma atau tekan Enter</p>
+  </label>
+</fieldset>

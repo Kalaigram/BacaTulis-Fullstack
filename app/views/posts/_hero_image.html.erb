@@ -1,0 +1,6 @@
+<%# app/views/posts/_hero_image.html.erb %>
+<% if post.hero_image.attached? %>
+  <div class="mb-4 rounded-lg overflow-hidden">
+    <%= image_tag post.hero_image, class: "w-full h-64 object-cover" %>
+  </div>
+<% end %>

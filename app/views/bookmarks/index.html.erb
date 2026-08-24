@@ -1,0 +1,39 @@
+<div class="flex items-center justify-between gap-4 mb-6">
+  <h1 class="text-2xl font-bold">Reading List</h1>
+</div>
+
+<% if @posts.any? %>
+  <div class="grid gap-4">
+    <% @posts.each do |post| %>
+      <article class="card bg-base-100 shadow-sm">
+        <div class="card-body">
+          <div class="flex items-center justify-between gap-4">
+            <h2 class="card-title">
+              <%= link_to post.title, post, class: "link link-hover" %>
+            </h2>
+            <div class="flex items-center gap-2">
+              <% if post.category %>
+                <span class="badge badge-neutral badge-outline badge-sm"><%= post.category.name %></span>
+              <% end %>
+              <%= render "posts/status_badge", post: post %>
+            </div>
+          </div>
+          <p class="text-sm opacity-70">oleh <%= post.user.email_address %> &middot; <%= time_ago_in_words(post.created_at) %> lalu</p>
+          <div class="card-actions">
+            <%= link_to "Baca", post, class: "btn btn-sm btn-ghost" %>
+            <%= button_to bookmark_path(post.bookmarks.find_by(user: current_user)), method: :delete, class: "btn btn-sm btn-ghost btn-error", data: { turbo_confirm: "Hapus dari reading list?" } do %>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.25 4.25a.75.75 0 011.06 0L10 7.94l4.69-4.69a.75.75 0 111.061 1.06L11.06 9l4.69 4.69a.75.75 0 11-1.061 1.06L10 10.06l-4.69 4.69a.75.75 0 11-1.061-1.06L8.94 10 4.25 5.31a.75.75 0 010-1.06z" clip-rule="evenodd" /></svg>
+              Hapus
+            <% end %>
+          </div>
+        </div>
+      </article>
+    <% end %>
+  </div>
+<% else %>
+  <div class="card bg-base-100 shadow-sm">
+    <div class="card-body">
+      <p>Reading list masih kosong. Mulai bookmark post yang menarik!</p>
+    </div>
+  </div>
+<% end %>

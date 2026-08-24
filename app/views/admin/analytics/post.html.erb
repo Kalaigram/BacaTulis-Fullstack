@@ -1,0 +1,88 @@
+<div class="flex items-center justify-between gap-4 mb-6">
+  <h1 class="text-2xl font-bold">Analytics: <%= @post.title %></h1>
+  <%= link_to "Kembali ke Dashboard", admin_analytics_path, class: "btn btn-ghost btn-sm" %>
+</div>
+
+<div class="grid gap-4 sm:grid-cols-3 mb-8">
+  <div class="card bg-base-100 shadow-sm">
+    <div class="card-body">
+      <span class="text-sm opacity-70">Total Views</span>
+      <span class="text-3xl font-bold"><%= @post.views_count %></span>
+    </div>
+  </div>
+  <div class="card bg-base-100 shadow-sm">
+    <div class="card-body">
+      <span class="text-sm opacity-70">Total Likes</span>
+      <span class="text-3xl font-bold text-success"><%= @post.likes_count %></span>
+    </div>
+  </div>
+  <div class="card bg-base-100 shadow-sm">
+    <div class="card-body">
+      <span class="text-sm opacity-70">Total Comments</span>
+      <span class="text-3xl font-bold text-info"><%= @post.comments_count %></span>
+    </div>
+  </div>
+</div>
+
+<h2 class="text-lg font-bold mb-4">Views Harian (30 Hari)</h2>
+<div class="card bg-base-100 shadow-sm mb-8">
+  <div class="card-body">
+    <canvas id="postViewsChart" height="100"></canvas>
+  </div>
+</div>
+
+<h2 class="text-lg font-bold mb-4">View Log Terbaru</h2>
+<div class="card bg-base-100 shadow-sm">
+  <div class="card-body">
+    <div class="overflow-x-auto">
+      <table class="table table-zebra">
+        <thead>
+          <tr>
+            <th>Waktu</th>
+            <th>User</th>
+            <th>IP Address</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @views.each do |view| %>
+            <tr>
+              <td><%= l view.viewed_at, format: :long %></td>
+              <td><%= view.user&.email_address || "Anonymous" %></td>
+              <td><%= view.ip_address %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("turbo:load", function() {
+    const ctx = document.getElementById('postViewsChart');
+    if (ctx && !ctx.chart) {
+      const data = <%= @daily_views.to_json.html_safe %>;
+      const labels = Object.keys(data).sort();
+      const values = labels.map(l => data[l]);
+
+      ctx.chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Views',
+            data: values,
+            backgroundColor: 'rgba(59, 130, 246, 0.7)',
+            borderColor: 'rgb(59, 130, 246)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { display: false } },
+          scales: { y: { beginAtZero: true } }
+        }
+      });
+    }
+  });
+</script>

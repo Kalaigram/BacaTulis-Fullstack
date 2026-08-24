@@ -1,0 +1,13 @@
+<%# app/views/posts/_bookmark_button.html.erb %>
+<%= turbo_frame_tag "bookmark_#{post.id}" do %>
+  <button class="btn btn-ghost btn-sm <%= post.bookmarked_by?(current_user) ? 'btn-primary' : '' %>" 
+          data-controller="bookmarks"
+          data-action="click->bookmarks#toggle"
+          data-bookmarks-url-value="<%= bookmarks_path(post_id: post.id) %>"
+          data-bookmarks-destroy-url-value="<%= post.bookmarked_by?(current_user) ? bookmark_path(post.bookmarks.find_by(user: current_user)) : '' %>">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 <%= post.bookmarked_by?(current_user) ? 'fill-current' : '' %>" viewBox="0 0 20 20" fill="currentColor">
+      <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 00-.379 1.26L9 15.12l8.374-8.78a1 1 0 00-.379-1.26l-7-3z" />
+    </svg>
+    <span class="ml-1"><%= post.bookmarked_by?(current_user) ? 'Saved' : 'Save' %></span>
+  </button>
+<% end %>

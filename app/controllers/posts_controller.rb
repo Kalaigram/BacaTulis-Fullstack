@@ -4,12 +4,13 @@ class PostsController < ApplicationController
 
   def index
     query = PostQuery.new(current_user, scope: params[:scope])
-    filtered = query.filtered(q: params[:q], status: params[:status], category_id: params[:category_id])
+    filtered = query.filtered(q: params[:q], status: params[:status], category_id: params[:category_id], tag_id: params[:tag_id])
     @total = query.total(filtered)
     @posts = query.page(filtered, params[:page])
   end
 
   def show
+    @post.post_views.create(user: current_user, ip_address: request.remote_ip, user_agent: request.user_agent, viewed_at: Time.current)
   end
 
   def new
@@ -55,6 +56,6 @@ class PostsController < ApplicationController
   end
 
   def post_params
-    params.expect(post: [ :title, :body, :status, :category_id ])
+    params.expect(post: [ :title, :body, :status, :category_id, :hero_image, :remove_hero_image, { tag_ids: [], images: [], remove_image_ids: [] } ])
   end
 end

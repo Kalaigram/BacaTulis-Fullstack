@@ -1,16 +1,31 @@
+<%= render "hero_image", post: @post %>
+
 <article class="card bg-base-100 shadow-sm">
   <div class="card-body">
-    <h1 class="card-title text-2xl">
-      <%= @post.title %>
-      <%= render "status_badge", post: @post %>
-    </h1>
-    <p class="text-sm opacity-70">
+    <div class="flex items-center justify-between gap-4 mb-2">
+      <h1 class="card-title text-2xl flex-1">
+        <%= @post.title %>
+      </h1>
+      <div class="flex items-center gap-2">
+        <%= render "like_button", post: @post %>
+        <%= render "bookmark_button", post: @post %>
+        <%= render "shared/report_button", reportable: @post %>
+      </div>
+    </div>
+
+    <%= render "status_badge", post: @post %>
+    <%= render "tags", post: @post %>
+
+    <p class="text-sm opacity-70 mt-2">
       oleh <%= @post.user.email_address %> &middot; <%= l @post.created_at, format: :long %>
       <% if @post.category %>
         &middot; <span class="badge badge-neutral badge-outline badge-sm"><%= @post.category.name %></span>
       <% end %>
     </p>
-    <div class="post-body mt-4"><%= simple_format @post.body %></div>
+
+    <div class="post-body mt-4"><%= @post.body %></div>
+
+    <%= render "images", post: @post %>
   </div>
 </article>
 
@@ -37,11 +52,12 @@
             <span class="text-xs opacity-60"><%= time_ago_in_words(comment.created_at) %> lalu</span>
           </div>
           <p class="mt-1"><%= simple_format comment.body %></p>
-          <% if comment.user == current_user || current_user.admin? %>
-            <div class="mt-1">
+          <div class="flex gap-2 mt-1">
+            <% if comment.user == current_user || current_user.admin? %>
               <%= button_to "Hapus", comment, method: :delete, class: "btn btn-xs btn-ghost btn-error", data: { turbo_confirm: "Hapus komentar ini?" } %>
-            </div>
-          <% end %>
+            <% end %>
+            <%= render "shared/report_button", reportable: comment %>
+          </div>
         </div>
       <% end %>
 

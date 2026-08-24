@@ -1,0 +1,126 @@
+<div class="flex items-center justify-between gap-4 mb-6">
+  <h1 class="text-2xl font-bold">Analytics Dashboard</h1>
+  <div class="dropdown dropdown-end">
+    <label tabindex="0" class="btn btn-outline btn-sm m-1">
+      Periode: <%= @period.humanize %>
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+    </label>
+    <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-10 w-40 p-2 shadow">
+      <li><%= link_to "Minggu Ini", admin_analytics_path(period: "week") %></li>
+      <li><%= link_to "Bulan Ini", admin_analytics_path(period: "month") %></li>
+      <li><%= link_to "Tahun Ini", admin_analytics_path(period: "year") %></li>
+    </ul>
+  </div>
+</div>
+
+<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+  <div class="card bg-base-100 shadow-sm">
+    <div class="card-body">
+      <span class="text-sm opacity-70">Total Post</span>
+      <span class="text-3xl font-bold"><%= @analytics[:total_posts] %></span>
+    </div>
+  </div>
+
+  <div class="card bg-base-100 shadow-sm">
+    <div class="card-body">
+      <span class="text-sm opacity-70">Publikasi</span>
+      <span class="text-3xl font-bold text-success"><%= @analytics[:published_posts] %></span>
+    </div>
+  </div>
+
+  <div class="card bg-base-100 shadow-sm">
+    <div class="card-body">
+      <span class="text-sm opacity-70">Total Views</span>
+      <span class="text-3xl font-bold text-info"><%= @analytics[:total_views] %></span>
+    </div>
+  </div>
+
+  <div class="card bg-base-100 shadow-sm">
+    <div class="card-body">
+      <span class="text-sm opacity-70">Total Users</span>
+      <span class="text-3xl font-bold"><%= @analytics[:total_users] %></span>
+    </div>
+  </div>
+
+  <div class="card bg-base-100 shadow-sm lg:col-span-2">
+    <div class="card-body">
+      <span class="text-sm opacity-70">Engagement Rate</span>
+      <span class="text-3xl font-bold text-warning"><%= number_to_percentage(@analytics[:engagement_rate], precision: 2) %></span>
+    </div>
+  </div>
+</div>
+
+<h2 class="text-lg font-bold mb-4">Views Chart (30 Days)</h2>
+<div class="card bg-base-100 shadow-sm mb-8">
+  <div class="card-body">
+    <canvas id="viewsChart" height="100"></canvas>
+  </div>
+</div>
+
+<h2 class="text-lg font-bold mb-4">Post Paling Populer</h2>
+<div class="card bg-base-100 shadow-sm">
+  <div class="card-body">
+    <div class="overflow-x-auto">
+      <table class="table table-zebra">
+        <thead>
+          <tr>
+            <th>Post</th>
+            <th>Author</th>
+            <th>Views</th>
+            <th>Likes</th>
+            <th>Comments</th>
+            <th>Engagement</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @analytics[:popular_posts].each do |post| %>
+            <tr>
+              <td><%= link_to post.title, post, class: "link link-hover" %></td>
+              <td><%= post.user.email_address %></td>
+              <td><%= post.views_count %></td>
+              <td><%= post.likes_count %></td>
+              <td><%= post.comments_count %></td>
+              <td>
+                <%= number_to_percentage(
+                  ((post.likes_count + post.comments_count).to_f / [post.views_count, 1].max) * 100,
+                  precision: 2
+                ) %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("turbo:load", function() {
+    const ctx = document.getElementById('viewsChart');
+    if (ctx && !ctx.chart) {
+      const data = <%= @analytics[:views_by_day].to_json.html_safe %>;
+      const labels = Object.keys(data).sort();
+      const values = labels.map(l => data[l]);
+
+      ctx.chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Views',
+            data: values,
+            borderColor: 'rgb(59, 130, 246)',
+            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            tension: 0.3,
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { display: false } },
+          scales: { y: { beginAtZero: true } }
+        }
+      });
+    }
+  });
+</script>
